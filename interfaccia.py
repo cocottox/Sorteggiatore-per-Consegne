@@ -43,21 +43,23 @@ class AppIndirizzi:
             entry.grid(row=i, column=1,columnspan=3,pady=5,ipadx=50)
             self.entries[chiave] = entry
 
-        # Partiamo dalla riga 4 (dopo i campi di input)
+        # Questa è la riga di partenza per la grafica, da qua in poi il codice ha preso il soppravvento
         riga_attuale = 5
         
-        # Il tuo tasto SALVA (ora usa grid)
+        # tasto SALVA 
         self.btn_salva = tk.Button(self.root, text="Salva", command=self.salva_e_verifica, bg="#7cfc00")
         self.btn_salva.grid(row=riga_attuale, column=0, columnspan=1, pady=5,padx=15,ipadx=30)
-        
+
+        # tastop CERCA
         self.btn_cerca = tk.Button(self.root, text="Cerca", command=self.azione_cerca, bg="#ffbf00")
         self.btn_cerca.grid(row=riga_attuale, column=1, columnspan=1, pady=5,padx=15, ipadx=30)
-        
+
+        # tasto ELIMINA
         self.btn_elimina = tk.Button(self.root, text="Elimina", command=self.azione_elimina, bg="#ff0000")
         self.btn_elimina.grid(row=riga_attuale, column=3, columnspan=1, pady=5,padx=15,ipadx=30)
         riga_attuale += 1
         
-        # Il tuo tasto MOSTRA LISTA (ora usa grid)
+        # tasto MOSTRA LISTA 
         self.btn_mostra = tk.Button(self.root, text="Visualizza Lista", command=self.apri_rubrica, bg="#9932cc")
         self.btn_mostra.grid(row=riga_attuale, column=0, columnspan=1, pady=5, ipadx=15)
        
@@ -74,24 +76,24 @@ class AppIndirizzi:
         self.entry_mezzi.grid(row=riga_attuale, column=1)
         riga_attuale += 1
 
-        # Il tuo tasto GENERA (ora usa grid)
+        # tasto GENERA 
         self.btn_calcola = tk.Button(self.root, text="Genera Percorsi", command=self.apri_finestra_giri, bg="#ffd54f")
         self.btn_calcola.grid(row=riga_attuale, column=0, columnspan=2, pady=10)
 
         # Assicura che la colonna si allarghi bene
         self.root.grid_columnconfigure(1, weight=1)
         
-        # 1. Creiamo la lista ordinata delle caselle di testo per il focus
+        # la lista ordinata delle caselle di testo per il focus
         self.lista_focus = [self.entries[chiave] for chiave, _ in self.campi_config]
         self.lista_focus.append(self.entry_mezzi) # Aggiungiamo anche il campo "Numero Mezzi" alla fine
         
-        # 2. Colleghiamo i tasti (Freccia Giù, Freccia Su, Invio) alle tue funzioni
+        # Collegamento per i tasti (Freccia Giù, Freccia Su, Invio)
         for widget in self.lista_focus:
             widget.bind("<Down>", self.muovi_focus)
             widget.bind("<Return>", self.muovi_focus)
             widget.bind("<Up>", self.muovi_focus_indietro)
             
-        # 3. Mettiamo il cursore lampeggiante sulla prima casella (Nome) all'avvio
+        # il cursore lampeggiante sulla prima casella (Nome) all'avvio
         if self.lista_focus:
             self.lista_focus[0].focus_set()
         
@@ -163,12 +165,11 @@ class AppIndirizzi:
             messagebox.showwarning("Ricerca", "Nessun risultato trovato.")
             
     def pulisci_campi(self):
-        """Svuota tutte le entry e rimette il cursore sul campo Nome"""
         # Svuota tutte le caselle di testo
         for chiave in self.entries:
             self.entries[chiave].delete(0, tk.END)
             
-        # Rimette il cursore lampeggiante sulla casella "nome"
+        #Rimette il cursore lampeggiante sulla casella "nome"
         if "nome" in self.entries:
             self.entries["nome"].focus_set()
 
@@ -189,7 +190,7 @@ class AppIndirizzi:
                 self.pulisci_campi()
                 messagebox.showinfo("Eliminato", "Indirizzo rimosso con successo.")
                 
-                # Aggiorna la rubrica in tempo reale se è aperta
+                #Aggiorna la rubrica in tempo reale se è aperta
                 if hasattr(self, 'finestra_rubrica') and self.finestra_rubrica.winfo_exists():
                     for item in self.tree_rubrica.get_children():
                         self.tree_rubrica.delete(item)
@@ -203,9 +204,8 @@ class AppIndirizzi:
     def apri_rubrica(self):
         top = tk.Toplevel(self.root)
         top.title("Rubrica Indirizzi")
-        top.geometry("600x400") # Leggermente allargata per fare spazio alle note
+        top.geometry("600x400") 
 
-        # Aggiunta la colonna 'note'
         colonne = ("nome", "cognome", "via", "whitelist", "note")
         tree = ttk.Treeview(top, columns=colonne, show='headings')
         
@@ -246,7 +246,7 @@ class AppIndirizzi:
             self.entries["via"].insert(0, valori[2])
             self.entries["whitelist"].insert(0, "si" if valori[3] == "Sì" else "no")
             
-            # Gestione riempimento Note
+            #Gestione riempimento Note
             if len(valori) > 4:
                 self.entries["note"].delete(0, tk.END)
                 self.entries["note"].insert(0, valori[4])
@@ -304,7 +304,7 @@ class AppIndirizzi:
         top.title(f"Piani di Carico - {len(tutti_i_giri)} Mezzi")
         top.geometry("650x700")
 
-        #Sistema di Scroll (Canvas + Scrollbar)
+        #Sistema di Scroll
         canvas = tk.Canvas(top)
         scrollbar = ttk.Scrollbar(top, orient="vertical", command=canvas.yview)
         scrollable_frame = tk.Frame(canvas)
@@ -352,14 +352,14 @@ class AppIndirizzi:
         tree.column("note", width=150)
         
         for i, p in enumerate(lista_punti, 1):
-            # Recupera la nota, gestendo vecchi salvataggi che potrebbero non averla
+            #Recupera la nota, gestendo vecchi salvataggi che potrebbero non averla
             nota = getattr(p, 'note', '')
             tree.insert("", tk.END, values=(i, f"{p.nome} {p.cognome}", p.via, nota))
         
         tree.pack(fill="x")
         
     def controlla_database_locale(self):
-        """Metodo che incrocia indirizzi.json con DataTrieste.json"""
+        
         if not os.path.exists('DataTrieste.json'):
             messagebox.showerror("Errore", "File DataTrieste.json non trovato!")
             return
@@ -371,7 +371,7 @@ class AppIndirizzi:
         mancanti = []
         
         for persona in self.gi.vault:
-            # Pulizia per il confronto
+            #Pulizia per il confronto
             input_pulito = persona.via.lower().strip().replace(",", "")
             
             match_trovato = False
@@ -401,11 +401,10 @@ class AppIndirizzi:
         messagebox.showinfo("Esito Verifica", msg)
 
     def salva_e_verifica(self):
-        """Salva il contatto e prova subito a cercarne le coordinate"""
-        # Recupera i dati dalle entry pulendoli da spazi vuoti iniziali/finali
+        
+        #Recupera i dati dalle entry pulendoli da spazi vuoti iniziali/finali
         dati = {chiave: self.entries[chiave].get().strip() for chiave, _ in self.campi_config}
         
-        # 1) CONTROLLO CAMPI VUOTI
         if not dati['nome'] or not dati['cognome']:
             messagebox.showwarning("Attenzione", "I campi Nome e Cognome sono obbligatori!")
             return
@@ -413,10 +412,10 @@ class AppIndirizzi:
             messagebox.showwarning("Attenzione", "Il campo Via è obbligatorio!")
             return
             
-        # Converte "si/no" in Booleano
+        #Converte "si/no" in Booleano
         is_white = dati['whitelist'].lower() == 'si'
         
-        # Aggiunge al vault (nota: aggiungeremo anche il campo note più avanti)
+        #Aggiunge al vault
         self.gi.aggiungi_indirizzo(
             nome=dati['nome'], 
             cognome=dati['cognome'], 
@@ -425,10 +424,10 @@ class AppIndirizzi:
             note=dati.get('note', '') # predisposizione per il punto 4
         )
         
-        # Avvia subito la ricerca coordinate per questo nuovo inserimento
+        #Avvia subito la ricerca coordinate per questo nuovo inserimento
         self.controlla_database_locale()
         
-        # Pulisce i campi
+        #Pulisco i campi
         self.pulisci_campi()
         messagebox.showinfo("Successo", "Contatto salvato e coordinate verificate!")
     
