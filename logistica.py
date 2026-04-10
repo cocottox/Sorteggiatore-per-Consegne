@@ -16,15 +16,15 @@ import math
 
 class OttimizzatorePercorsi:
     def __init__(self, sede_lat=45.650, sede_lon=13.781): 
-        # Punto di partenza: Ospedale Maggiore, Trieste
+        #Punto di partenza: Ospedale Maggiore, Trieste
         self.sede = {"lat": sede_lat, "lon": sede_lon}
 
     def calcola_distanza(self, lat1, lon1, lat2, lon2):
-        # Calcolo euclideo per distanze cittadine
+        #Calcolo euclideo per distanze cittadine
         return math.sqrt((lat1 - lat2)**2 + (lon1 - lon2)**2)
 
     def ordina_percorso(self, punti):
-        """Ordina gli indirizzi partendo dalla sede usando il 'Vicino più Prossimo'."""
+        
         percorso = []
         rimanenti = punti.copy()
         
@@ -38,7 +38,7 @@ class OttimizzatorePercorsi:
         return percorso
 
     def genera_giri(self, lista_indirizzi, n_mezzi=1):
-        # FILTRO: Solo whitelist e con coordinate valide
+        #Solo whitelist e con coordinate valide
         validi = [p for p in lista_indirizzi if p.lat and p.lon and p.in_whitelist]
         
         if not validi:
@@ -47,25 +47,21 @@ class OttimizzatorePercorsi:
         n_mezzi = min(n_mezzi, len(validi))
         if n_mezzi < 1: return []
 
-        # ORDINAMENTO "A RADAR" (Sweep Algorithm)
+        # qua ho scelto lo sweep algorithm una sorta di radar attorno
         sede_lat, sede_lon = self.sede["lat"], self.sede["lon"]
         
         def calcola_angolo(p):
-            # Calcola l'angolo dell'indirizzo rispetto all'Ospedale
+            #Calcola l'angolo dell'indirizzo rispetto all'Ospedale
             return math.atan2(p.lat - sede_lat, p.lon - sede_lon)
 
-        # Mettiamo in fila le persone seguendo un cerchio attorno alla sede
         validi_ordinati = sorted(validi, key=calcola_angolo)
 
-        # DIVISIONE EQUA (Taglio a fette del cerchio)
         dimensione_blocco = math.ceil(len(validi_ordinati) / n_mezzi)
         giri_per_mezzo = [validi_ordinati[i:i + dimensione_blocco] for i in range(0, len(validi_ordinati), dimensione_blocco)]
         
-        # Sicurezza: nel caso i mezzi siano più dei blocchi generati
         while len(giri_per_mezzo) < n_mezzi:
             giri_per_mezzo.append([])
 
-        # OTTIMIZZAZIONE (Calcolo del percorso più veloce per ogni mezzo)
         giri_ottimizzati = []
         for gruppo in giri_per_mezzo:
             if gruppo:
