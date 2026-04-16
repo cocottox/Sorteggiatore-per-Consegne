@@ -22,11 +22,11 @@ Avvia lo script principale per generare i giri di consegna.
 📄 Licenza e Copyright
 Questo progetto è rilasciato sotto i termini della Licenza MIT.
 
-Copyright (c) 2026 cocottox
+Copyright (c) 2026 Matteo Senn
 
 L'autorizzazione è concessa, a titolo gratuito, a chiunque ottenga una copia di questo software e dei file di documentazione associati, di utilizzare il software senza restrizioni, compresi i diritti di utilizzo, copia, modifica, fusione, pubblicazione, distribuzione, sottolicenza e/o vendita, alle seguenti condizioni:
 
 La nota di copyright sopra riportata e questa nota di autorizzazione devono essere incluse in tutte le copie o parti sostanziali del software.
 
 ✍️ Autore
-Realizzato con cura da cocottox.
+Realizzato con cura da Matteo Senn.
